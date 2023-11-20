@@ -1,7 +1,7 @@
 from typing import List
 
 from pydantic import EmailStr
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 
@@ -57,7 +57,7 @@ async def read_contact_by_email(contact_email: EmailStr, db: Session = Depends(g
     return contact
 
 # adding a form ContactModel so user can create new contact by filling this form
-@router.post('/', response_model=schemas_contacts.ContactResponce)
+@router.post('/', response_model=schemas_contacts.ContactResponce, status_code=status.HTTP_201_CREATED)
 async def create_contact(body: schemas_contacts.ContactModel, db: Session = Depends(get_db),
                          current_user: User = Depends(service_auth.get_current_user)):
     contact = await repository_contacts.add_contact(body, current_user, db)
